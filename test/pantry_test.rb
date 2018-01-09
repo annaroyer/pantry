@@ -115,7 +115,49 @@ class PantryTest < Minitest::Test
     assert_equal 3, pantry.cookbook.length
   end
 
-  def test_what_can_i_make_returns_a_list_of_recipes_you_can_make_with_ingredients_in_stock
+  def test_it_returns_whether_you_can_make_a_recipe_from_its_ingredients
+    pantry = Pantry.new
+    r1 = Recipe.new("Cheese Pizza")
+    r1.add_ingredient("Cheese", 20)
+    r1.add_ingredient("Flour", 20)
+    pantry.add_to_cookbook(r1)
+
+    refute pantry.can_make?(r1)
+
+    pantry.restock("Cheese", 20)
+    pantry.restock("Flour", 20)
+
+    assert pantry.can_make?(r1)
+  end
+
+  def test_potential_recipes_returns_cookbook_recipes_you_have_enough_of_all_ingredients_to_make
+    pantry = Pantry.new
+
+    r1 = Recipe.new("Cheese Pizza")
+    r1.add_ingredient("Cheese", 20)
+    r1.add_ingredient("Flour", 20)
+    r2 = Recipe.new("Pickles")
+    r2.add_ingredient("Brine", 10)
+    r2.add_ingredient("Cucumbers", 30)
+    r3 = Recipe.new("Peanuts")
+    r3.add_ingredient("Raw nuts", 10)
+    r3.add_ingredient("Salt", 10)
+
+    pantry.add_to_cookbook(r1)
+    pantry.add_to_cookbook(r2)
+    pantry.add_to_cookbook(r3)
+
+    pantry.restock("Cheese", 10)
+    pantry.restock("Flour", 20)
+    pantry.restock("Brine", 40)
+    pantry.restock("Cucumbers", 120)
+    pantry.restock("Raw nuts", 20)
+    pantry.restock("Salt", 20)
+
+    assert_equal 2, pantry.potential_recipes.count
+  end
+
+  def test_what_can_i_make_returns_a_list_of_names_of_potential_recipes
     pantry = Pantry.new
 
     r1 = Recipe.new("Cheese Pizza")
@@ -142,6 +184,28 @@ class PantryTest < Minitest::Test
     assert_equal ["Pickles", "Peanuts"], pantry.what_can_i_make
   end
 
+  def test_how_many_returns_how_many_of_a_recipe_you_have_the_ingredients_to_make
+    pantry = Pantry.new
+    r1 = Recipe.new("Cheese Pizza")
+    r1.add_ingredient("Cheese", 20)
+    r1.add_ingredient("Flour", 20)
+    pantry.add_to_cookbook(r1)
+
+    pantry.restock("Cheese", 10)
+    pantry.restock("Flour", 20)
+
+    assert_equal 0, pantry.how_many(r1)
+
+    pantry.restock("Cheese", 10)
+
+    assert_equal 1, pantry.how_many(r1)
+
+    pantry.restock("Cheese", 20)
+    pantry.restock("Flour", 30)
+
+    assert_equal 2, pantry.how_many(r1)
+  end
+  
   def test_how_many_can_i_make_returns_recipes_and_how_many_of_each_you_can_make_with_ingredients_in_stock
     pantry = Pantry.new
 
