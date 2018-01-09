@@ -8,7 +8,7 @@ class Pantry
     @stock.default = 0
     @shopping_list = {}
     @shopping_list.default = 0
-    @cookbook = []
+    @cookbook = {}
   end
 
   def stock_check(ingredient)
@@ -35,7 +35,7 @@ class Pantry
   end
 
   def add_to_cookbook(recipe)
-    @cookbook << recipe
+    @cookbook[recipe.name] = recipe
   end
 
   def can_make?(recipe)
@@ -45,9 +45,10 @@ class Pantry
   end
 
   def what_can_i_make
-    @cookbook.find_all do |recipe|
-      recipe.ingredient_types
-
+    @cookbook.keep_if do |name, recipe|
+      can_make?(recipe)
+    end.keys
   end
+
 
 end
