@@ -4,10 +4,8 @@ class Pantry
               :cookbook
 
   def initialize
-    @stock = {}
-    @stock.default = 0
-    @shopping_list = {}
-    @shopping_list.default = 0
+    @stock = Hash.new(0)
+    @shopping_list = Hash.new(0)
     @cookbook = {}
   end
 
