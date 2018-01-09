@@ -57,7 +57,7 @@ class Pantry
   def how_many(recipe)
     recipe.ingredient_types.map do |ingredient|
       @stock[ingredient] / recipe.amount_required(ingredient)
-    end.sort.shift
+    end.min
   end
 
   def how_many_can_i_make
