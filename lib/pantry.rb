@@ -38,7 +38,7 @@ class Pantry
 
   def can_make?(recipe)
     recipe.ingredient_types.all? do |ingredient|
-      @stock[ingredient] >= recipe.amount_required(ingredient)
+      stock_check(ingredient) >= recipe.amount_required(ingredient)
     end
   end
 
@@ -54,7 +54,7 @@ class Pantry
 
   def how_many(recipe)
     recipe.ingredient_types.map do |ingredient|
-      @stock[ingredient] / recipe.amount_required(ingredient)
+      stock_check(ingredient) / recipe.amount_required(ingredient)
     end.min
   end
 
