@@ -44,11 +44,25 @@ class Pantry
     end
   end
 
-  def what_can_i_make
+  def potential_recipes
     @cookbook.keep_if do |name, recipe|
       can_make?(recipe)
-    end.keys
+    end
   end
 
+  def what_can_i_make
+    potential_recipes.keys
+  end
 
+  def how_many(recipe)
+    recipe.ingredient_types.map do |ingredient|
+      @stock[ingredient] / recipe.amount_required(ingredient)
+    end.sort.shift
+  end
+
+  def how_many_can_i_make
+    potential_recipes.transform_values do |recipe|
+      how_many(recipe)
+    end
+  end
 end
